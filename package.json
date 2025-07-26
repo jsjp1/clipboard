@@ -1,0 +1,20 @@
+{
+  "name": "clip",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^24.1.0",
+    "concurrently": "^9.2.0",
+    "electron": "^37.2.4",
+    "esbuild": "^0.25.8",
+    "typescript": "^5.8.3",
+    "wait-on": "^8.0.4"
+  }
+}
