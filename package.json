@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint -c .eslintrc --ext .ts ./src",
+    "start": "tsc && electron ./dist/main.js"
   },
   "keywords": [],
   "author": "",
