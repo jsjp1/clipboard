@@ -6,7 +6,7 @@ body {
   -webkit-app-region: drag;
 }
 
-.copy-button, .clipboard-item, .clipboard-content {
+.copy-button, .delete-button {
   -webkit-app-region: no-drag;
 }
 
@@ -66,4 +66,46 @@ body {
 
 .copy-button:hover {
   opacity: 1;
+}
+
+.delete-button {
+  flex-shrink: 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+  pointer-events: auto !important;
+  position: relative;
+  z-index: 1000;  
+  min-width: 30px;
+  min-height: 30px;
+  padding: 8px;
+}
+
+.delete-button:hover {
+  opacity: 1;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(129, 129, 129, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.modal-content {
+  background: rgba(40, 40, 40, 0.8);
+  color: white;
+  padding: 20px 40px;
+  border-radius: 20px;
+  font-size: 20px;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
 }

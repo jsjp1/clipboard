@@ -1,6 +1,10 @@
 import { app, BrowserWindow, clipboard, ipcMain, nativeImage } from 'electron';  // ipcMain, nativeImage 추가
 import path from 'path';
 import { ClipboardItem } from './types/ClipboardItem';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 let win: BrowserWindow;
 let lastText = '';
@@ -10,7 +14,7 @@ function createWindow() {
   win = new BrowserWindow({
     width: 400,
     height: 250,
-    resizable: false,
+    resizable: true,
     movable: true,
     frame: false,
     webPreferences: {
@@ -58,33 +62,12 @@ function createWindow() {
 app.whenReady().then(() => {
   ipcMain.on('copy-text', (_, text: string) => {
     clipboard.writeText(text);
-    lastText = text;
-    lastImageBase64 = '';
-    const item: ClipboardItem = {
-      type: 'text',
-      timestamp: Date.now(),
-      data: text,
-    };
-    win.webContents.send('clipboard-updated', item);
   });
-
   ipcMain.on('copy-image', (_, dataUrl: string) => {
     const image = nativeImage.createFromDataURL(dataUrl);
     clipboard.writeImage(image);
-
-    const base64Content = dataUrl.startsWith('data:image/png;base64,')
-      ? dataUrl.substring('data:image/png;base64,'.length)
-      : dataUrl;
-
-    lastImageBase64 = base64Content;
-    lastText = ''; 
-    const item: ClipboardItem = {
-      type: 'image',
-      timestamp: Date.now(),
-      data: dataUrl,
-    };
-    win.webContents.send('clipboard-updated', item);
   });
+
   createWindow();
 
   app.on('activate', function () {

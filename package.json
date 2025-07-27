@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint -c .eslintrc --ext .ts ./src",
-    "start": "tsc && electron ./dist/main.js"
+    "build": "tsc -p tsconfig.json && tsc -p tsconfig.preload.json",
+    "start": "npm run build && electron ./dist/main.js"
   },
   "keywords": [],
   "author": "",
@@ -18,5 +19,8 @@
     "esbuild": "^0.25.8",
     "typescript": "^5.8.3",
     "wait-on": "^8.0.4"
+  },
+  "dependencies": {
+    "eslint": "^9.32.0"
   }
 }

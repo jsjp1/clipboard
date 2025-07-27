@@ -1,3 +1,7 @@
+import { ClipboardManager } from './ClipboardManager.js';
+
+const clipboardManager: ClipboardManager = new ClipboardManager();
+
 window.addEventListener('DOMContentLoaded', () => {
   const container = document.getElementById('clipboard-list');
 
@@ -11,6 +15,9 @@ window.addEventListener('DOMContentLoaded', () => {
   container.appendChild(list);
 
   window.electronAPI.onClipboardUpdate((item) => {
+    if (!item || !item.data) return;
+    if (clipboardManager.findItemByData(item.data)) return;
+
     const entry = document.createElement('div');
     entry.className = 'clipboard-item';
 
@@ -20,6 +27,10 @@ window.addEventListener('DOMContentLoaded', () => {
     const copyButton = document.createElement('button');
     copyButton.className = 'copy-button';
     copyButton.textContent = '📋';
+
+    const deleteButton = document.createElement('button');
+    deleteButton.className = 'delete-button';
+    deleteButton.textContent = '🗑️';
 
     if (item.type === 'text') {
       content.textContent = item.data;
@@ -37,9 +48,34 @@ window.addEventListener('DOMContentLoaded', () => {
       });
     }
 
+    deleteButton.addEventListener('click', () => {
+      clipboardManager.deleteItemByTimestamp(item.timestamp);
+      entry.remove();
+    });
+
+    copyButton.addEventListener('click', () => {
+      const modal = document.createElement('div');
+      modal.className = 'modal';
+
+      const modalContent = document.createElement('div');
+      modalContent.className = 'modal-content';
+      modalContent.textContent = 'Copied to clipboard!';
+
+      modal.appendChild(modalContent);
+      document.body.appendChild(modal);
+
+      setTimeout(() => {
+        modal.remove();
+      }, 750);
+    });
+
+    clipboardManager.addItem(item);
+
     entry.appendChild(content);
     entry.appendChild(copyButton);
+    entry.appendChild(deleteButton);
     list.prepend(entry);
+
   });
 });
 
