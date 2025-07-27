@@ -21,11 +21,37 @@ body {
   color: white;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   user-select: none;
   font-size: 14px;
   font-weight: 500;
   border-bottom: 1px solid #cacaca;
+}
+
+.frame-buttons {
+  margin-left: auto;
+  display: flex;
+  -webkit-app-region: no-drag;
+}
+
+.fix-button,
+.up-button,
+.down-button {
+  background: transparent;
+  border: none;
+  color: rgb(85, 85, 85);
+  font-size: 12px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.down-button {
+  padding-right: 25px;
+}
+
+.fix-button:hover,
+.up-button:hover, 
+.down-button:hover {
+  color: rgb(36, 36, 36);
 }
 
 .clipboard-container {

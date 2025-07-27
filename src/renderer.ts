@@ -79,3 +79,24 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 });
 
+
+const fixButton = document.querySelector('.fix-button');
+if(fixButton) {
+  fixButton.addEventListener('click', () => {
+    window.electronAPI.fixWindowToTopLeft();
+  });
+}
+
+const upButton = document.querySelector('.up-button');
+if(upButton) {
+  upButton.addEventListener('click', () => {
+    window.electronAPI.foldWindow();
+  });
+}
+
+const downButton = document.querySelector('.down-button');
+if(downButton) {
+  downButton.addEventListener('click', () => {
+    window.electronAPI.outspreadWindow();
+  });
+}

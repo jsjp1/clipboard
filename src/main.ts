@@ -10,6 +10,9 @@ let win: BrowserWindow;
 let lastText = '';
 let lastImageBase64 = '';
 
+let lastOutspreadWidth = 0;
+let lastOutspreadHeight = 0;
+
 function createWindow() {
   win = new BrowserWindow({
     width: 400,
@@ -68,6 +71,29 @@ app.whenReady().then(() => {
   ipcMain.on('copy-image', (_, dataUrl: string) => {
     const image = nativeImage.createFromDataURL(dataUrl);
     clipboard.writeImage(image);
+  });
+  
+  ipcMain.on('fix-window-top-left', () => {
+    const win = BrowserWindow.getFocusedWindow();
+    if(win) {
+      win.setBounds({x: 15, y: 30, width: win.getBounds().width, height: win.getBounds().height});
+    }
+  });
+
+  ipcMain.on('fold-window', () => {
+    const win = BrowserWindow.getFocusedWindow();
+    if(win) {
+      lastOutspreadWidth = win.getBounds().width;
+      lastOutspreadHeight = win.getBounds().height;
+      win.setBounds({x: win.getBounds().x, y: win.getBounds().y, width: win.getBounds().width, height: 20});
+    }
+  });
+
+  ipcMain.on('outspread-window', () => {
+    const win = BrowserWindow.getFocusedWindow();
+    if(win) {
+      win.setBounds({x: win.getBounds().x, y: win.getBounds().y, width: lastOutspreadWidth, height: lastOutspreadHeight});
+    }
   });
 
   createWindow();
