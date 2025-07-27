@@ -10,21 +10,30 @@ let win: BrowserWindow;
 let lastText = '';
 let lastImageBase64 = '';
 
-let lastOutspreadWidth = 0;
-let lastOutspreadHeight = 0;
+let lastOutspreadWidth = 400;
+let lastOutspreadHeight = 250;
 
 function createWindow() {
   win = new BrowserWindow({
-    width: 400,
-    height: 250,
+    width: lastOutspreadWidth,
+    height: lastOutspreadHeight,
     resizable: true,
     movable: true,
     frame: false,
+    alwaysOnTop: true,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
     },
   });
+
+  if(!win){
+    console.error("cannot create window");
+    return;
+  }
+
+  lastOutspreadWidth = win.getBounds().width;
+  lastOutspreadHeight = win.getBounds().height;
 
   win.loadFile(path.join(__dirname, '..', 'index.html'));
 
@@ -32,7 +41,7 @@ function createWindow() {
     const text = clipboard.readText();
     const image = clipboard.readImage();
 
-    if(text.replace(" ", "") === "") return;
+    if(!image && text.replace(" ", "") === "") return;
 
     if (!image.isEmpty()) {
       const base64 = image.toPNG().toString('base64');
