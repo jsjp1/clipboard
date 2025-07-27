@@ -29,6 +29,8 @@ function createWindow() {
     const text = clipboard.readText();
     const image = clipboard.readImage();
 
+    if(text.replace(" ", "") === "") return;
+
     if (!image.isEmpty()) {
       const base64 = image.toPNG().toString('base64');
       if (base64 !== lastImageBase64) {

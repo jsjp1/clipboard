@@ -1,13 +1,31 @@
-body {
+html, body {
   margin: 0;
-  margin-top: 15px;
-  font-family: sans-serif;
-  background-color: rgb(227, 227, 227);
-  -webkit-app-region: drag;
+  padding: 0;
 }
 
-.copy-button, .delete-button {
-  -webkit-app-region: no-drag;
+body {
+  font-family: sans-serif;
+  background-color: rgb(227, 227, 227);
+}
+
+.frame {
+  -webkit-app-region: drag; 
+  position: fixed;
+  top: 0; 
+  left: 0;
+  height: 20px;
+  width: 100%;
+  z-index: 9999;
+  padding: 0 12px;
+  background-color: lightgray;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+  font-size: 14px;
+  font-weight: 500;
+  border-bottom: 1px solid #cacaca;
 }
 
 .clipboard-container {
