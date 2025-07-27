@@ -2,12 +2,31 @@
   "name": "clip",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint -c .eslintrc --ext .ts ./src",
     "build": "tsc -p tsconfig.json && tsc -p tsconfig.preload.json",
+    "dist": "npm run build && electron-builder",
     "start": "npm run build && electron ./dist/main.js"
+  },
+  "build": {
+    "appId": "com.ellipsoid.clip",
+    "productName": "Clipboard",
+    "files": [
+      "dist/**/*",
+      "index.html",
+      "styles/**/*"
+    ],
+    "mac": {
+      "target": "dmg"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "linux": {
+      "target": "AppImage"
+    }
   },
   "keywords": [],
   "author": "",
@@ -16,6 +35,7 @@
     "@types/node": "^24.1.0",
     "concurrently": "^9.2.0",
     "electron": "^37.2.4",
+    "electron-builder": "^26.0.12",
     "esbuild": "^0.25.8",
     "typescript": "^5.8.3",
     "wait-on": "^8.0.4"
