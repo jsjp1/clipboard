@@ -31,4 +31,17 @@ export class RedisClient {
   async get(key: string): Promise<string | null> {
     return await this.client.get(key);
   }
+
+  async getAllData(): Promise<Record<string, string>> {
+    const keys = await this.client.keys('*');
+    const data: Record<string, string> = {};
+    
+    for (const key of keys) {
+      const value = await this.client.get(key);
+      if (value !== null) {
+        data[key] = value;
+      }
+    }
+    return data;
+  }
 }

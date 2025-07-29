@@ -50,14 +50,40 @@ function createWindow() {
   });
 
   win.loadFile(path.join(__dirname, '..', 'index.html'));
-  win.webContents.openDevTools();
 
+  // renderer 준비된 이후
+  // redis에 저장돼있던 클립보드 아이템들을 불러와서 renderer 프로세스에 전달
+  let redisCachedDataList: ClipboardItem[] = [];
+  win.webContents.once('did-finish-load', () => {
+    redisClient.getAllData().then(data => {
+      for (const [key, value] of Object.entries(data)) {
+        let type: ClipboardItem['type'] = value.startsWith('data:image/png;base64,') ? 'image' : 'text';
+
+        const item: ClipboardItem = {
+          type: type,
+          timestamp: parseInt(key),
+          data: value,
+        };
+        redisCachedDataList.push(item);
+      }
+
+      for (const item of redisCachedDataList.reverse()) {
+        win.webContents.send('clipboard-updated', item);
+      }
+    })
+    .catch(err => {
+      console.error('Failed to get all data from Redis:', err);
+    });
+  });
+
+  // TODO : signal
   setInterval(() => {
     const text = clipboard.readText();
     const image = clipboard.readImage();
 
     if(!image && text.replace(" ", "") === "") return;
 
+    const timestamp = Date.now();
     if (!image.isEmpty()) {
       const base64 = image.toPNG().toString('base64');
       if (base64 !== lastImageBase64) {
@@ -66,10 +92,11 @@ function createWindow() {
 
         const item: ClipboardItem = {
           type: 'image',
-          timestamp: Date.now(),
+          timestamp: timestamp,
           data: `data:image/png;base64,${base64}`,
         };
         win.webContents.send('clipboard-updated', item);
+        redisClient.set(timestamp.toString(), item.data);
       }
     }
     else if (text && text !== lastText) {
@@ -78,12 +105,21 @@ function createWindow() {
 
       const item: ClipboardItem = {
         type: 'text',
-        timestamp: Date.now(),
+        timestamp: timestamp,
         data: text,
       };
       win.webContents.send('clipboard-updated', item);
+      redisClient.set(timestamp.toString(), item.data);
     }
   }, 1000);
+
+  win.on('closed', () => {
+    redisClient.disconnect().then(() => {
+      console.log('Redis client disconnected');
+    }).catch(err => {
+      console.error('Failed to disconnect Redis client:', err);
+    });
+  });
 }
 
 
