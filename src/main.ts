@@ -8,6 +8,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 let win: BrowserWindow;
+let settingWin: BrowserWindow;
 let lastText = '';
 let lastImageBase64 = '';
 
@@ -172,7 +173,7 @@ app.whenReady().then(async () => {
   // 설정하기 버튼 (redis ..)
   // TODO 설정 기능 추가
   ipcMain.on('setting', () => {
-    const settingWin = new BrowserWindow({
+    settingWin = new BrowserWindow({
       width: 250,
       height: 150,
       x: win.getBounds().x,
@@ -192,14 +193,19 @@ app.whenReady().then(async () => {
   // setting 정보 변경
   // TODO setting 확장
   ipcMain.on('save-setting', async (_, redisHost: string, redisPort: number) => {
-    if (redisClient) {
+    if(redisClient && redisClient.isConnected) {
       await redisClient.disconnect();
+      console.log('Redis client disconnected for reconfiguration');
     }
+    
+    try {
+      redisClient = new RedisClient(redisHost, redisPort);
+      await redisClient.connect(); 
 
-    redisClient = new RedisClient(redisHost, redisPort);
-    await redisClient.connect(); 
-
-    console.log('\n\n######################\nNew RedisClient configured:', redisClient, "\n######################\n\n");
+      console.log('\n\n######################\nNew RedisClient configured:', redisClient, "\n######################\n\n");
+    } finally {
+      settingWin.close();
+    }
   });
 
   createWindow();
