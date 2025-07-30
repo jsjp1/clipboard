@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Clipboard-setting</title>
+  <link rel="stylesheet" href="./styles/styles.css" />
+</head>
+<body>
+  <div class="frame">
+    Setting
+  </div>
+
+  <br><br>
+
+  <div class="field">
+    <label for="redis-host">redis host:</label>
+    <input type="text" id="redis-host" value="localhost" />
+  </div>
+  <div class="field">
+    <label for="redis-port">redis port:</label>
+    <input type="number" id="redis-port" value="6379" />
+  </div>
+  <div class="save-button">
+    Save
+  </div>
+  <script type="module" src="./dist/setting.js"></script>
+</body>
+</html>

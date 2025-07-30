@@ -43,11 +43,7 @@ function createWindow() {
   lastOutspreadWidth = win.getBounds().width;
   lastOutspreadHeight = win.getBounds().height;
 
-  redisClient.connect().then(() => {
-    console.log('\n\n######################\nRedis client connected\n######################\n\n');
-  }).catch(err => {
-    console.error('Failed to connect to Redis:', err);
-  });
+  redisClient.connect();
 
   win.loadFile(path.join(__dirname, '..', 'index.html'));
 
@@ -123,7 +119,7 @@ function createWindow() {
 }
 
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
   // 클립보드 아이콘 버튼을 누르면 clipboard 업데이트하는 함수
   ipcMain.on('copy-text', (_, text: string) => {
     clipboard.writeText(text);
@@ -132,7 +128,8 @@ app.whenReady().then(() => {
     const image = nativeImage.createFromDataURL(dataUrl);
     clipboard.writeImage(image);
   });
-  
+
+
   // 고정 아이콘 버튼 기능으로 누르면 좌측 상단에 고정 
   // TODO 현재 고정은 아님, 이동만.
   ipcMain.on('fix-window-top-left', () => {
@@ -158,6 +155,51 @@ app.whenReady().then(() => {
     if(win) {
       win.setBounds({x: win.getBounds().x, y: win.getBounds().y, width: lastOutspreadWidth, height: lastOutspreadHeight});
     }
+  });
+
+  // 레디스에서 데이터 삭제
+  ipcMain.on('delete-from-redis', async (_, timestamp: number) => {
+    try {
+      await redisClient.delete(timestamp.toString());
+      console.log(`Deleted item with timestamp ${timestamp} from Redis`);
+    } catch (err) {
+      console.error(`Failed to delete item with timestamp ${timestamp} from Redis:`, err);
+    }
+  });
+
+
+  // setting.html
+  // 설정하기 버튼 (redis ..)
+  // TODO 설정 기능 추가
+  ipcMain.on('setting', () => {
+    const settingWin = new BrowserWindow({
+      width: 250,
+      height: 150,
+      x: win.getBounds().x,
+      y: win.getBounds().y,
+      movable: true,
+      resizable: false,
+      frame: false,      
+      alwaysOnTop: true,
+      webPreferences: {
+        contextIsolation: true,
+        preload: path.join(__dirname, 'preload.js'),
+      },
+    });
+    settingWin.loadFile(path.join(__dirname, '..', 'setting.html'));
+  });
+
+  // setting 정보 변경
+  // TODO setting 확장
+  ipcMain.on('save-setting', async (_, redisHost: string, redisPort: number) => {
+    if (redisClient) {
+      await redisClient.disconnect();
+    }
+
+    redisClient = new RedisClient(redisHost, redisPort);
+    await redisClient.connect(); 
+
+    console.log('\n\n######################\nNew RedisClient configured:', redisClient, "\n######################\n\n");
   });
 
   createWindow();

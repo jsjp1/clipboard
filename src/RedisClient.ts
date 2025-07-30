@@ -2,22 +2,40 @@ import { createClient } from 'redis';
 
 export class RedisClient {
   private client;
-  private static host: string;
-  private static port: number;
+  private host: string;
+  private port: number;
+  private static hasLoggedConnectionError = false;
 
   constructor(host: string, port: number) {
+    this.host = host;
+    this.port = port;
+
     this.client = createClient({
       socket: {
-        host: host || RedisClient.host,
-        port: port || RedisClient.port,
-      },
+        host: this.host, port: this.port,
+      }, 
     });
 
-    this.client.on('error', (err) => console.error('Redis Client Error', err));
+    this.client.on('error', (err) => {
+      if(RedisClient.hasLoggedConnectionError) return;
+
+      if (err?.code === 'ECONNREFUSED') {
+        console.warn('\n\n######################\nRedis is not running. Skipping Redis features.\n######################\n\n');
+      } else {
+        console.error('Redis Client Error:', err);
+      }
+
+      RedisClient.hasLoggedConnectionError = true;
+    });
   }
 
   async connect() {
-    await this.client.connect();
+    try {
+      await this.client.connect();
+      console.log('\n\n######################\nRedis client connected: %s:%i.\n######################\n\n', this.host, this.port);
+    } catch (err) {
+      console.error('Failed to connect to Redis: %s:%i, %s', this.host, this.port, err);
+    }
   }
 
   async disconnect() {
@@ -43,5 +61,9 @@ export class RedisClient {
       }
     }
     return data;
+  }
+
+  async delete(key: string) {
+    await this.client.del(key);
   }
 }

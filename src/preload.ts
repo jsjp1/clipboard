@@ -16,9 +16,18 @@ contextBridge.exposeInMainWorld('electronAPI', {
     ipcRenderer.send('copy-image', base64);
   },
 
+  setting: () => ipcRenderer.send('setting'),
+
   fixWindowToTopLeft: () => ipcRenderer.send('fix-window-top-left'),
 
   foldWindow: () => ipcRenderer.send('fold-window'),
 
   outspreadWindow: () => ipcRenderer.send('outspread-window'),
+
+  deleteFromRedis: (timestamp: number) => {
+    ipcRenderer.send('delete-from-redis', timestamp);
+  },
+
+  // setting.html
+  saveSetting: (redisHost: string, redisPort: number) => ipcRenderer.send('save-setting', redisHost, redisPort),
 });

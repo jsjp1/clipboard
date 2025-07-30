@@ -33,6 +33,7 @@ body {
   -webkit-app-region: no-drag;
 }
 
+.setting-button,
 .fix-button,
 .up-button,
 .down-button {
@@ -152,4 +153,30 @@ body {
   border-radius: 20px;
   font-size: 20px;
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+}
+
+/* setting.html */
+.field {
+  padding: 5px;
+  font-size: 14px;
+  color: grey;
+}
+
+.save-button {
+  position: absolute;
+  bottom: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 12px;
+  font-size: 14px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.save-button:hover {
+  background-color: #45a049;
 }

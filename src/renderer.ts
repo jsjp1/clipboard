@@ -4,7 +4,6 @@ const clipboardManager: ClipboardManager = new ClipboardManager();
 
 window.addEventListener('DOMContentLoaded', () => {
   const container = document.getElementById('clipboard-list');
-
   if (!container) {
     window.close();
     return;
@@ -34,22 +33,17 @@ window.addEventListener('DOMContentLoaded', () => {
 
     if (item.type === 'text') {
       content.textContent = item.data;
-
-      copyButton.addEventListener('click', () => {
-        window.electronAPI.copyText(item.data);
-      });
+      copyButton.addEventListener('click', () => window.electronAPI.copyText(item.data));
     } else if (item.type === 'image') {
       const img = document.createElement('img');
       img.src = item.data;
       content.appendChild(img);
-
-      copyButton.addEventListener('click', () => {
-        window.electronAPI.copyImage(item.data);
-      });
+      copyButton.addEventListener('click', () => window.electronAPI.copyImage(item.data));
     }
 
     deleteButton.addEventListener('click', () => {
       clipboardManager.deleteItemByTimestamp(item.timestamp);
+      window.electronAPI.deleteFromRedis(item.timestamp);
       entry.remove();
     });
 
@@ -64,39 +58,26 @@ window.addEventListener('DOMContentLoaded', () => {
       modal.appendChild(modalContent);
       document.body.appendChild(modal);
 
-      setTimeout(() => {
-        modal.remove();
-      }, 750);
+      setTimeout(() => modal.remove(), 750);
     });
 
     clipboardManager.addItem(item);
-
     entry.appendChild(content);
     entry.appendChild(copyButton);
     entry.appendChild(deleteButton);
     list.prepend(entry);
-
   });
 });
 
-
-const fixButton = document.querySelector('.fix-button');
-if(fixButton) {
-  fixButton.addEventListener('click', () => {
-    window.electronAPI.fixWindowToTopLeft();
-  });
-}
-
-const upButton = document.querySelector('.up-button');
-if(upButton) {
-  upButton.addEventListener('click', () => {
-    window.electronAPI.foldWindow();
-  });
-}
-
-const downButton = document.querySelector('.down-button');
-if(downButton) {
-  downButton.addEventListener('click', () => {
-    window.electronAPI.outspreadWindow();
-  });
-}
+document.querySelector('.setting-button')?.addEventListener('click', () => {
+  window.electronAPI.setting();
+});
+document.querySelector('.fix-button')?.addEventListener('click', () => {
+  window.electronAPI.fixWindowToTopLeft();
+});
+document.querySelector('.up-button')?.addEventListener('click', () => {
+  window.electronAPI.foldWindow();
+});
+document.querySelector('.down-button')?.addEventListener('click', () => {
+  window.electronAPI.outspreadWindow();
+});
