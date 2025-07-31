@@ -8,13 +8,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
     });
   },
 
-  copyText: (text: string) => {
-    ipcRenderer.send('copy-text', text);
-  },
+  copyText: (text: string) => ipcRenderer.send('copy-text', text),
 
-  copyImage: (base64: string) => {
-    ipcRenderer.send('copy-image', base64);
-  },
+  copyImage: (base64: string) => ipcRenderer.send('copy-image', base64),
 
   fixWindowToTopLeft: () => ipcRenderer.send('fix-window-top-left'),
 
@@ -22,13 +18,14 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
   outspreadWindow: () => ipcRenderer.send('outspread-window'),
 
-  deleteFromRedis: (timestamp: number) => {
-    ipcRenderer.send('delete-from-redis', timestamp);
-  },
+  deleteFromRedis: (timestamp: number) => ipcRenderer.send('delete-from-redis', timestamp),
 
 
   // setting.html
   setting: () => ipcRenderer.send('setting'),
   
-  saveSetting: (redisHost: string, redisPort: number) => ipcRenderer.send('save-setting', redisHost, redisPort),
+  saveSetting: async (redisHost: string, redisPort: number): Promise<boolean> => {
+    const res = await ipcRenderer.invoke('save-setting', redisHost, redisPort);
+    return !!res;
+  },
 });

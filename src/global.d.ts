@@ -16,7 +16,7 @@ declare global {
       deleteFromRedis: (timestamp: number) => void;
 
       // setting.html
-      saveSetting: (redisHost: string, redisPort: number) => void;
+      saveSetting: (redisHost: string, redisPort: number) => Promise<boolean>;
     };
   }
 }

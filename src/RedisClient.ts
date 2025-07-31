@@ -33,16 +33,24 @@ export class RedisClient {
       }
     });
 
-    this.client.connect().then(() => {
+    try {
+      await this.client.connect();
       this.isConnected = true;
       RedisClient.hasLoggedConnectionError = false;
-      console.log('\n\n######################\nRedis client connected: %s:%i.\n######################\n\n', this.host, this.port);
-    });
+      console.log(
+        '\n\n######################\nRedis client connected: %s:%i successfully.\n######################\n\n',
+        this.host,
+        this.port,
+      );
+    } catch (err) {
+      this.isConnected = false;
+      console.error('Redis connection failed:', err);
+    }
   }
 
   async disconnect() {
-    await this.client.quit();
     this.isConnected = false;
+    await this.client.quit();
   }
 
   async set(key: string, value: string) {

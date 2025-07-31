@@ -192,7 +192,7 @@ app.whenReady().then(async () => {
 
   // setting 정보 변경
   // TODO setting 확장
-  ipcMain.on('save-setting', async (_, redisHost: string, redisPort: number) => {
+  ipcMain.handle('save-setting', async (_, redisHost: string, redisPort: number): Promise<boolean> => {
     if(redisClient && redisClient.isConnected) {
       await redisClient.disconnect();
       console.log('Redis client disconnected for reconfiguration');
@@ -200,15 +200,22 @@ app.whenReady().then(async () => {
     
     try {
       redisClient = new RedisClient(redisHost, redisPort);
-      await redisClient.connect(); 
-
-      console.log('\n\n######################\nNew RedisClient configured:', redisClient, "\n######################\n\n");
+      await redisClient.connect();
     } finally {
-      settingWin.close();
+      console.log('\n\n######################\nNew RedisClient configured:', redisClient, "\n######################\n\n");
     }
+    setTimeout(() => {
+      if (settingWin) {
+        settingWin.close();
+      }
+    }, 750);
+    return redisClient.isConnected;
   });
 
   createWindow();
+
+  const icon = nativeImage.createFromPath(path.join(__dirname, '..','assets', 'icon.png'));
+  app.dock!.setIcon(icon);
 
   app.on('activate', function () {
     if(BrowserWindow.getAllWindows().length === 0) {
